@@ -182,14 +182,16 @@ class AI(Player):  # сделать умное добивание корабля
                     elif last_hit[-2].y == last_hit[-1].y:
                         near_hit = choice([(0, 1), (0, -1)])
                         any_dot = Dot(last_hit[-1].y + near_hit[0], last_hit[-1].x + near_hit[1])
-            for ship in self.enemy_board.ship_list:
-                if last_hit:
-                    if (ship.dots[-1] == last_hit[-1]) or (ship.dots[0] == last_hit[-1]):
-                        last_hit[-1] = last_hit[0]
+                    for ship in self.enemy_board.ship_list:
+                        if last_hit:
+                            if (ship.dots[-1] == last_hit[-1]) or (ship.dots[0] == last_hit[-1]):
+                                last_hit[-1] = last_hit[0]
+
             if any_dot in self.dots_player:
                 continue
             if any_dot in self.enemy_board.busy_list:
                 continue
+
             sleep(0.5 * randint(2, 4))
             print(f"Ход компьютера: {any_dot.y + 1}{any_dot.x + 1}")
             break
@@ -203,7 +205,7 @@ class Game:
         self.lens = (3, 2, 2, 1, 1, 1, 1)
         ai_board = self.random_board()
         user_board = self.random_board()
-        ai_board.hid = True
+        ai_board.hid = False
 
         self.ai = AI(ai_board, user_board)
         self.us = User(user_board, ai_board)
