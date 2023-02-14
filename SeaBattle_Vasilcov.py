@@ -132,7 +132,7 @@ class Player:
     def __init__(self, own_board: Board, enemy_board: Board):
         self.own_board = own_board
         self.enemy_board = enemy_board
-        # клетки вне пполя, чтобы нормально добить корабли которые расположены по краю
+        # клетки вне поля, для компа, чтобы нормально добить корабли которые расположены по краю
         self.dots_player = [Dot(-1, i) for i in range(-1, 7)] + [Dot(6, i) for i in range(-1, 7)] + \
                            [Dot(i, -1) for i in range(-1, 7)] + [Dot(i, 6) for i in range(-1, 7)]
 
@@ -170,6 +170,7 @@ class AI(Player):  # сделать умное добивание корабля
         while True:  # Добивание кораблей многопалубных кораблей
             any_dot = Dot(randint(0, 5), randint(0, 5))
             last_hit = self.enemy_board.last_hit
+
             if last_hit:
                 if len(last_hit) == 1:
                     near_hit = choice([(0, 1), (0, -1), (1, 0), (-1, 0)])
@@ -178,17 +179,18 @@ class AI(Player):  # сделать умное добивание корабля
                     if last_hit[-2].x == last_hit[-1].x:
                         near_hit = choice([(1, 0), (-1, 0)])
                         any_dot = Dot(last_hit[-1].y + near_hit[0], last_hit[-1].x + near_hit[1])
-                        last_hit.pop()
                     elif last_hit[-2].y == last_hit[-1].y:
                         near_hit = choice([(0, 1), (0, -1)])
                         any_dot = Dot(last_hit[-1].y + near_hit[0], last_hit[-1].x + near_hit[1])
-                        last_hit.pop()
-
+            for ship in self.enemy_board.ship_list:
+                if last_hit:
+                    if (ship.dots[-1] == last_hit[-1]) or (ship.dots[0] == last_hit[-1]):
+                        last_hit[-1] = last_hit[0]
             if any_dot in self.dots_player:
                 continue
             if any_dot in self.enemy_board.busy_list:
                 continue
-            sleep(0.5 * randint(3, 5))
+            sleep(0.5 * randint(2, 4))
             print(f"Ход компьютера: {any_dot.y + 1}{any_dot.x + 1}")
             break
         self.dots_player.append(any_dot)
