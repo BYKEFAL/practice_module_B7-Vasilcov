@@ -205,7 +205,7 @@ class Game:
         self.lens = (3, 2, 2, 1, 1, 1, 1)
         ai_board = self.random_board()
         user_board = self.random_board()
-        ai_board.hid = False
+        ai_board.hid = True
 
         self.ai = AI(ai_board, user_board)
         self.us = User(user_board, ai_board)
