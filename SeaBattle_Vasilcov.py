@@ -63,8 +63,8 @@ class Board:
         self.hid = hid
         self.busy_list = []
         self.ship_list = []
+        self.ship_count = 0
         self.last_hit = []
-        self.destr_ships = 0
 
     def __str__(self):
         board = '   ' + ' ' + '   '.join([str(i) for i in range(1, self.size + 1)]) + '  '
@@ -85,6 +85,7 @@ class Board:
             self.field[i.y][i.x] = '■'
             self.busy_list.append(i)
         self.ship_list.append(ship)
+        self.ship_count += 1
         self.contour(ship)
 
     def contour(self, ship: Ship, visible=False):
@@ -110,9 +111,9 @@ class Board:
                 print('Попадание!')
                 ship.lives -= 1
                 if ship.lives == 0:
-                    self.destr_ships += 1
                     self.contour(ship, visible=True)
                     print('Корабль уничтожен!\n')
+                    self.ship_count -= 1
                     self.last_hit = []
                     return True
                 else:
@@ -184,8 +185,8 @@ class AI(Player):  # сделать умное добивание корабля
                         any_dot = Dot(last_hit[-1].y + near_hit[0], last_hit[-1].x + near_hit[1])
                     for ship in self.enemy_board.ship_list:
                         if last_hit:
-                            if (ship.dots[-1] == last_hit[-1]) or (ship.dots[0] == last_hit[-1]):
-                                last_hit[-1] = last_hit[0]
+                            if (ship.dots[-1] == last_hit[1]) or (ship.dots[0] == last_hit[1]):
+                                last_hit.insert(len(last_hit), last_hit[0])
 
             if any_dot in self.dots_player:
                 continue
@@ -287,11 +288,11 @@ class Game:
             if repeat:
                 step -= 1
 
-            if self.ai.own_board.destr_ships == 7:
+            if self.ai.own_board.ship_count == 0:
                 self.print_board()
                 print('Поздравляю Вы выиграли!')
                 break
-            if self.us.own_board.destr_ships == 7:
+            if self.us.own_board.ship_count == 0:
                 self.print_board()
                 print('Все плохо, вы проиграли!!!')
                 break
